@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>James' School Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #F0F0F0;
+        }
+        h1 {
+            font-size: 36px;
+            margin-top: 50px;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 24px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .progress {
+            display: inline-block;
+            width: 300px;
+            height: 20px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        .progress-bar {
+            display: block;
+            height: 100%;
+            background-color: #4CAF50;
+            position: absolute;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        .line {
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background-color: #333;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        .line.green {
+            background-color: #4CAF50;
+        }
+        .activity {
+            font-size: 18px;
+            color: #333;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .link {
+            font-size: 18px;
+            color: #333;
+            text-decoration: none;
+            display: block;
+            margin-top: 20px;
+        }
+        .link:hover {
+            color: #4CAF50;
+        }
+        .clock {
+            font-size: 36px;
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>James' School Schedule</h1>
+<p>Today is <span id="day"></span></p>
+<p>James is currently <span id="status"></span></p>
+<div class="progress">
+    <div class="progress-bar" id="progress-bar"></div>
+    <div class="line"></div>
+</div>
+<p class="activity" id="activity"></p>
+<a href="#" class="link" id="link">Learn more about schools</a>
+<p class="clock" id="clock"></p>
+<script>
+        var updateClock = function() {
+            var d = new Date();
+            var dayOfWeek = d.getDay();
+            var time = d.getHours() * 60 + d.getMinutes();
+            var status;
+            var startTimes = [0, 460, 460, 460, 460, 460, 0];
+            var endTimes = [0, 870, 870, 930, 930, 870, 0];
+            var totalTime = endTimes[dayOfWeek] - startTimes[dayOfWeek];
+            var elapsed = time - startTimes[dayOfWeek];
+            var progress = elapsed / totalTime * 100;
+            if (dayOfWeek == 0 || dayOfWeek == 6) {
+                status = "not at school today";
+                progress = 0;
+            } else if (dayOfWeek == 3 || dayOfWeek == 4) {
+                if (time < endTimes[dayOfWeek-2]) {
+                    status = "at school, in class";
+                } else {
+                    status = "at school, after class";
+                }
+            } else {
+                if (time < startTimes[dayOfWeek] || time > endTimes[dayOfWeek]) {
+                    status = "not at school today";
+                    progress = 0;
+                } else if (time < endTimes[dayOfWeek-2]) {
+                    status = "at school, in class";
+                } else {
+                    status = "at school, after class";
+                }
+            }
+            document.getElementById("day").innerHTML = getDayOfWeek(dayOfWeek);
+            document.getElementById("status").innerHTML = status;
+            document.getElementById("progress-bar").style.width = progress + "%";
+            var line = document.getElementsByClassName("line")[0];
+            if (progress >= 20) {
+                line.classList.add("green");
+                document.getElementById("activity").innerHTML = "Morning Break";
+                document.getElementById("link").href = "https://en.wikipedia.org/wiki/Break_(work)#School_breaks";
+            }
+            if (progress >= 40) {
+                line.classList.add("green");
+                document.getElementById("activity").innerHTML = "Lunch Break";
+                document.getElementById("link").href = "https://en.wikipedia.org/wiki/Lunch#School_lunch";
+            }
+            if (progress >= 60) {
+                line.classList.add("green");
+                document.getElementById("activity").innerHTML = "Afternoon Break";
+                document.getElementById("link").href = "https://en.wikipedia.org/wiki/Break_(work)#School_breaks";
+            }
+            if (progress >= 80) {
+                line.classList.add("green");
+                document.getElementById("activity").innerHTML = "School is over";
+                document.getElementById("link").href = "https://en.wikipedia.org/wiki/School";
+            }
+            var hours = d.getHours();
+            var minutes = d.getMinutes();
+            var seconds = d.getSeconds();
+            if (hours < 10) {
+                hours = "0" + hours;
+            }
+            if (minutes < 10) {
+                minutes = "0" + minutes;
+            }
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+            }
+            document.getElementById("clock").innerHTML = hours + ":" + minutes + ":" + seconds;
+        };
+        updateClock();
+        setInterval(updateClock, 1000);
+        function getDayOfWeek(day) {
+            var daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            return daysOfWeek[day];
+        }
+    </script>
+</body>
+</html>
+
